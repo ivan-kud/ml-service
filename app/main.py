@@ -1,11 +1,10 @@
-import base64
-
 from fastapi import FastAPI, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from torchvision.models import resnet50, ResNet50_Weights
-# from PIL import Image
+# from torchvision.models import resnet50, ResNet50_Weights
+
+from app import utils
 
 
 app = FastAPI()
@@ -13,10 +12,11 @@ app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+
 # Initialize weights, transforms and model
-weights = ResNet50_Weights.DEFAULT
-preprocess_image = weights.transforms()
-model = resnet50(weights=weights)
+# weights = ResNet50_Weights.DEFAULT
+# preprocess_image = weights.transforms()
+# model = resnet50(weights=weights)
 
 
 @app.get('/', response_class=HTMLResponse)
@@ -24,20 +24,22 @@ def read_home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.post('/')
-def predict(img: str = Form()):
-    img = img.split(';base64,')[1]
-    img_bytes = base64.b64decode(img)
+@app.get('/digit', response_class=HTMLResponse)
+def read_digit(request: Request):
+    return templates.TemplateResponse("digit.html", {"request": request})
 
-    # Preprocess the input image
-    img_transformed = preprocess_image(img_bytes)
 
-    # Set model to eval mode
-    model.eval()
+@app.post('/digit', response_class=HTMLResponse)
+def predict_digit(request: Request, img: str = Form()):
+    # Preprocess image to use it as model input
+    image_tensor = utils.preprocess_digit(img)
 
-    with open('image.png', 'wb') as f:
-        f.write(img_bytes)
-    return FileResponse('image.png', media_type='image/png')
+    # Predict
+    model = utils.digit_models['convl4fconn1']
+    proba, label = utils.predict_digit(model, image_tensor)
+
+    return templates.TemplateResponse("digit.html", {"request": request,
+                                                     'message': (proba, label)})
 
 
 # def preprocess_image(img_mx_array, model, thresh=0.5):

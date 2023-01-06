@@ -4,4 +4,6 @@ uvicorn[standard]
 # aiofiles
 python-multipart
 jinja2
+Pillow
+torch
 torchvision>=0.14.0,<0.15.0
