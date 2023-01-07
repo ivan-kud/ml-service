@@ -3,8 +3,8 @@
 .DS_Store
 __pycache__
 app/__pycache__
-learning/.ipynb_checkpoints
-learning/data
-learning/runs
+model-training/.ipynb_checkpoints
+model-training/data
+model-training/runs
 venv
 image.png

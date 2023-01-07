@@ -39,7 +39,8 @@ def predict_digit(request: Request, img: str = Form()):
     proba, label = utils.predict_digit(model, image_tensor)
 
     return templates.TemplateResponse("digit.html", {"request": request,
-                                                     'message': (proba, label)})
+                                                     'message': (proba, label),
+                                                     'image': img})
 
 
 # def preprocess_image(img_mx_array, model, thresh=0.5):

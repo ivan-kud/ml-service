@@ -9,18 +9,18 @@
 <!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/css/styles.css') }}">-->
 </head>
 
-<body>
+<body onload="loadBody()">
     <div style="text-align: center;">
         <canvas id="canvas" width="400" height="400" style="border: 1px solid #000000;"></canvas>
         <br>
         <form id="myForm" method="post">
-            <input type="hidden" id="image" name="img">
-            <input type="button" value="Clear" style="width: 10em;" onclick="clearCanvas()">
-            <input type="button" value="Submit" style="width: 10em;" onclick="submitCanvas()">
+            <input type="hidden" id="image" name="img" value="{{ image }}">
+            <input type="button" value="Clear" onclick="clearCanvas()" style="width: 10em;">
+            <input type="button" value="Submit" onclick="submitCanvas()" style="width: 10em;">
         </form>
     </div>
     <p id="message">{{ message }}</p>
-    <script src="{{ url_for('static', path='/js/index.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/digit.js') }}"></script>
 </body>
 
 </html>

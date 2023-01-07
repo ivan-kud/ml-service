@@ -1,10 +1,11 @@
-var canvas = document.getElementById("canvas");
 var message = document.getElementById("message");
-
+var image = document.getElementById("image");
+var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
+
 ctx.lineWidth = canvas.width / 20;
 ctx.lineJoin = "round";
-ctx.lineCap = 'round';
+ctx.lineCap = "round";
 ctx.strokeStyle = "black";
 ctx.fillStyle = "black";
 
@@ -18,6 +19,15 @@ canvas.addEventListener("mousemove", e => findxy('move', e), false);
 canvas.addEventListener("mousedown", e => findxy('down', e), false);
 canvas.addEventListener("mouseup", e => findxy('up', e), false);
 canvas.addEventListener("mouseout", e => findxy('out', e), false);
+
+// store canvas data while submitting the form
+var var_img = new Image;
+var_img.onload = function() {
+    ctx.drawImage(var_img, 0, 0);
+}
+if (image.value != "") {
+    var_img.src = image.value;
+}
 
 function findxy(res, e) {
     if (res == 'down') {
@@ -57,7 +67,7 @@ function submitCanvas() {
     if (isCanvasBlank()) {
         message.innerHTML = '<span style="color:red">Error</span><br>Can\'t send blank image';
     } else {
-        document.getElementById('image').value = canvas.toDataURL();
+        image.value = canvas.toDataURL();
         document.getElementById('myForm').submit();
     }
 }
