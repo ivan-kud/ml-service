@@ -5,5 +5,5 @@ uvicorn[standard]
 python-multipart
 jinja2
 Pillow
-torch
+torch>=1.13.0,<1.14.0
 torchvision>=0.14.0,<0.15.0

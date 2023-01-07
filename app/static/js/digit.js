@@ -1,4 +1,5 @@
-var message = document.getElementById("message");
+var output1 = document.getElementById("output1");
+var output2 = document.getElementById("output2");
 var image = document.getElementById("image");
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -60,12 +61,14 @@ function draw() {
 
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    message.innerHTML = '';
+    output1.innerHTML = '&nbsp';
+    output2.innerHTML = '&nbsp';
 }
 
 function submitCanvas() {
     if (isCanvasBlank()) {
-        message.innerHTML = '<span style="color:red">Error</span><br>Can\'t send blank image';
+        output1.innerHTML = '<span style="color:red">Error</span>';
+        output2.innerHTML = 'Can\'t send blank image';
     } else {
         image.value = canvas.toDataURL();
         document.getElementById('myForm').submit();

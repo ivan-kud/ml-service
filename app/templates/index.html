@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-</head>
-<body>
-    <p>Hello, Ivan!</p>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block header %}<h3>Home page</h3>{% endblock %}
+
+{% block page_content %}
+<p>This is my service where you can apply machine learning models to solve some problems.</p>
+<p>Select a problem you want to solve from the navigation menu.</p>
+{% endblock %}
