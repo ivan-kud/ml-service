@@ -2,20 +2,40 @@
 
 {% block title %}Digit classification{% endblock %}
 
-{% block header %}<h3>Digit classification</h3>{% endblock %}
+{% block header %}<h1>Digit classification</h1>{% endblock %}
 
 {% block page_content %}
-<div style="text-align: center;">
+<form id="myForm" method="post">
+    <h4 id="step1">1. Select a model</h4>
+    <label for="model_name">Model:</label>
+    <select name="model_name" id="model_name">
+        {% if model_name is not defined %}{% set model_name = "conv5" %}{% endif %}
+        <option value="logreg" {% if model_name == "logreg" %}selected{% endif %}>Logistic Regression</option>
+        <option value="dense3" {% if model_name == "dense3" %}selected{% endif %}>Dense (3 layers)</option>
+        <option value="conv3" {% if model_name == "conv3" %}selected{% endif %}>Convolutional (3 layers)</option>
+        <option value="conv5" {% if model_name == "conv5" %}selected{% endif %}>Convolutional (5 layers)</option>
+        <option value="all" {% if model_name == "all" %}selected{% endif %}>All models</option>
+    </select>
+    <br>
+    <h4 id="step2">2. Draw a digit and submit</h4>
     <canvas id="canvas" width="400" height="400" style="border: 1px solid #000000;"></canvas>
     <br>
-    <form id="myForm" method="post">
-        <input type="hidden" id="image" name="img" value="{{ image }}">
-        <input type="button" value="Clear" onclick="clearCanvas()" style="width: 10em;">
-        <input type="button" value="Submit" onclick="submitCanvas()" style="width: 10em;">
-    </form>
-</div>
-<p class="output" id="output1">&nbsp{{ output1 }}</p>
-<p class="output" id="output2">&nbsp{{ output2 }}</p>
+    <input type="hidden" id="image" name="image" value="{{ image }}">
+    <input type="button" value="Clear" onclick="clearCanvas()" style="width: 10em;">
+    <input type="button" value="Submit" onclick="submitCanvas()" style="width: 10em;">
+    <h4 id="step3">3. Get the result</h4>
+    <p class="output" id="output1">{{ output1 }}&nbsp</p>
+    <p class="output" id="output2">{{ output2 }}&nbsp</p>
+    <br>
+</form>
+<b class="details">Technical details:</b>
+<ul class="details">
+    <li>The models were trained on MNIST dataset</li>
+    <li><pre>Logistic Regression model:      1 FC layer;   7.8e3 parameters; validation accuracy 90.18 %</pre></li>
+    <li><pre>Dense model:                    3 FC layers;  5.0e4 parameters; validation accuracy 97.35 %</pre></li>
+    <li><pre>Convolutional (3 layers) model: 2 Conv, 1 FC; 5.0e4 parameters; validation accuracy 99.04 %</pre></li>
+    <li><pre>Convolutional (5 layers) model: 4 Conv, 1 FC; 5.2e4 parameters; validation accuracy 99.34 %</pre></li>
+</ul>
 {% endblock %}
 
 {% block scripts %}<script src="{{ url_for('static', path='/js/digit.js') }}"></script>{% endblock %}
