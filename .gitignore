@@ -7,6 +7,5 @@ model-training/.ipynb_checkpoints
 model-training/data
 model-training/runs
 venv
-some_commands.sh
 image.png
 draft.py
