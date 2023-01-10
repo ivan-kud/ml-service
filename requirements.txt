@@ -1,7 +1,6 @@
 fastapi>=0.89.0,<0.90.0
 uvicorn[standard]
-# gunicorn
-# aiofiles
+aiofiles
 python-multipart
 jinja2
 Pillow
