@@ -60,6 +60,7 @@ function draw() {
 }
 
 function clearCanvas() {
+    ctx.fillStyle = 'white';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     output1.innerHTML = '&nbsp';
     output2.innerHTML = '&nbsp';
