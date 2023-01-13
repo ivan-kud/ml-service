@@ -135,6 +135,9 @@ def preprocess_image(img: str):
 
     # Convert to PIL, remove alpha, convert to grayscale, resize, invert
     pil_image = Image.open(io.BytesIO(image_bytes))
+
+    pil_image.save('image.png')
+
     background = Image.new('RGBA', pil_image.size, (255, 255, 255, 255))
     pil_image = Image.alpha_composite(background, pil_image)
     pil_image = pil_image.convert('L')
@@ -157,3 +160,31 @@ def predict(model: nn.Module, image: torch.Tensor):
         label = probabilities.argmax().item()
 
     return proba, label
+
+
+def get_response_data(model_name: ModelName, image: str):
+    # Preprocess image to use it as model input
+    image_tensor = preprocess_image(image)
+
+    # Get a model and predict
+    result = {}
+    for name, model in models.items():
+        if model_name is ModelName.all or model_name == name:
+            result[name] = predict(model, image_tensor)
+
+    # Form result as strings
+    if len(result) == 1:
+        result_str_1 = f'{result[model_name][1]}'
+        result_str_2 = f'{100*result[model_name][0]:.2f} %'
+    else:
+        result_str_1 = '; '.join([f'{name} - {value[1]}      '
+                                  for name, value in result.items()])
+        result_str_2 = '; '.join([f'{name} - {100*value[0]:.2f} %'
+                                  for name, value in result.items()])
+
+    return {
+        'model_name': model_name,
+        'image': image,
+        'output1': 'Label: ' + result_str_1,
+        'output2': 'Confidence: ' + result_str_2,
+    }
