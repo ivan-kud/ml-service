@@ -1,11 +1,9 @@
 .idea
 .theia
 .DS_Store
+.ipynb_checkpoints
 __pycache__
-app/__pycache__
-model-training/.ipynb_checkpoints
-model-training/data
-model-training/runs
-venv
-image.png
-draft.py
+/model-training/data
+/model-training/runs
+/venv/
+/draft.py
