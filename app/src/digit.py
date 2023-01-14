@@ -128,20 +128,14 @@ for name, model in models.items():
     model.load_state_dict(torch.load(path))
 
 
-def preprocess_image(img: str):
+def preprocess_image(img: str) -> torch.Tensor:
     # Convert to PIL image (RGBA)
     image_base64 = img.split(';base64,')[1]
     image_bytes = base64.b64decode(image_base64)
 
-    # Convert to PIL, remove alpha, convert to grayscale, resize, invert
+    # Convert to PIL, convert to grayscale, invert
     pil_image = Image.open(io.BytesIO(image_bytes))
-
-    pil_image.save('image.png')
-
-    background = Image.new('RGBA', pil_image.size, (255, 255, 255, 255))
-    pil_image = Image.alpha_composite(background, pil_image)
     pil_image = pil_image.convert('L')
-    pil_image = pil_image.resize((IMG_WIDTH, IMG_HEIGHT))
     pil_image = PIL.ImageOps.invert(pil_image)
 
     # Transform to Tensor, normalize, add dimension
@@ -152,7 +146,7 @@ def preprocess_image(img: str):
     return image_tensor
 
 
-def predict(model: nn.Module, image: torch.Tensor):
+def predict(model: nn.Module, image: torch.Tensor) -> tuple[float, int]:
     model.eval()
     with torch.no_grad():
         probabilities = nn.Softmax(dim=1)(model(image))[0]
@@ -162,11 +156,11 @@ def predict(model: nn.Module, image: torch.Tensor):
     return proba, label
 
 
-def get_response_data(model_name: ModelName, image: str):
+def get_response_data(model_name: ModelName, image: str) -> dict:
     # Preprocess image to use it as model input
     image_tensor = preprocess_image(image)
 
-    # Get a model and predict
+    # Predict
     result = {}
     for name, model in models.items():
         if model_name is ModelName.all or model_name == name:

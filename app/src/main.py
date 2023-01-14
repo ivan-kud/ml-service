@@ -14,22 +14,24 @@ app.mount('/static', StaticFiles(directory='app/static'), name='static')
 
 @app.get('/', response_class=HTMLResponse)
 def read_home(request: Request):
-    return templates.TemplateResponse('index.html', {'request': request})
+    return templates.TemplateResponse('pages/index.html', {'request': request})
 
 
 @app.get('/digit', response_class=HTMLResponse)
 def read_digit(request: Request):
-    return templates.TemplateResponse('digit.html', {'request': request})
+    return templates.TemplateResponse('pages/digit.html', {'request': request})
 
 
 @app.post('/digit', response_class=HTMLResponse)
 def predict_digit(request: Request,
                   model_name: digit.ModelName = Form(),
                   image: str = Form()):
-    data = digit.get_response_data(model_name, image)
-    return templates.TemplateResponse('digit.html', {'request': request, 'data': data})
+    response_data = digit.get_response_data(model_name, image)
+    response_data.update({'request': request})
+    return templates.TemplateResponse('pages/digit.html', response_data)
 
 
 @app.get('/person', response_class=HTMLResponse)
 def read_person(request: Request):
-    return templates.TemplateResponse('person.html', {'request': request})
+    return templates.TemplateResponse('pages/person.html',
+                                      {'request': request})

@@ -4,17 +4,22 @@ var image = document.getElementById("image");
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
-ctx.lineWidth = canvas.width / 20;
+ctx.lineWidth = 2;
 ctx.lineJoin = "round";
 ctx.lineCap = "round";
 ctx.strokeStyle = "black";
-ctx.fillStyle = "black";
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 var prevX = 0,
     currX = 0,
     prevY = 0,
     currY = 0,
-    flag = false;
+    flag = false,
+    canvasWidthRatio = canvas.clientWidth / canvas.width,
+    canvasHeightRatio = canvas.clientHeight / canvas.height,
+    canvasBorderWidth = (canvas.offsetWidth - canvas.clientWidth) / 2,
+    canvasBorderHeight = (canvas.offsetHeight - canvas.clientHeight) / 2;
 
 canvas.addEventListener("mousemove", e => findxy('move', e), false);
 canvas.addEventListener("mousedown", e => findxy('down', e), false);
@@ -48,8 +53,8 @@ function findxy(res, e) {
     }
 }
 
-const getX = (e) => e.clientX - canvas.getBoundingClientRect().left - 1; // 1 is the border width
-const getY = (e) => e.clientY - canvas.getBoundingClientRect().top - 1; // 1 is the border width
+const getX = (e) => (e.clientX - canvas.getBoundingClientRect().left - canvasBorderWidth) / canvasWidthRatio;
+const getY = (e) => (e.clientY - canvas.getBoundingClientRect().top - canvasBorderHeight) / canvasHeightRatio;
 
 function draw() {
     ctx.beginPath();
@@ -60,8 +65,7 @@ function draw() {
 }
 
 function clearCanvas() {
-    ctx.fillStyle = 'white';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     output1.innerHTML = '&nbsp';
     output2.innerHTML = '&nbsp';
 }
@@ -76,10 +80,19 @@ function submitCanvas() {
     }
 }
 
-// returns true if every pixel's uint32 representation is 0
+// returns true if every pixel's uint32 representation is 0xFFFFFFFF
 function isCanvasBlank() {
     const pixelBuffer = new Uint32Array(
         ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
     );
-    return !pixelBuffer.some(color => color !== 0);
+    return !pixelBuffer.some(color => color !== 0xFFFFFFFF);
 }
+
+// to keep scroll position while refreshing the page
+document.addEventListener("DOMContentLoaded", function(event) {
+    var scrollpos = localStorage.getItem('scrollpos');
+    if (scrollpos) window.scrollTo(0, scrollpos);
+});
+window.onbeforeunload = function(e) {
+    localStorage.setItem('scrollpos', window.scrollY);
+};

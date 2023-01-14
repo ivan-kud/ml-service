@@ -7,18 +7,24 @@ body {
 /* Style the header */
 header {
   padding: 10px;
-  background-color: #666;
+  background-color: #A52A2A;
   text-align: center;
   color: white;
 }
 
-/* Create two columns/boxes that floats next to each other */
+/* Container for flexboxes */
+section {
+  display: -webkit-flex;
+  display: flex;
+}
+
+/* Style the navigation menu */
 nav {
-  box-sizing: border-box;
-  float: left;
-  width: 30%;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  background: #8FBC8F;
   padding: 20px;
-  background: #ccc;
 }
 
 /* Style the list inside the menu */
@@ -27,34 +33,28 @@ nav ul {
   padding: 0;
 }
 
+/* Style the content */
 article {
-  box-sizing: border-box;
-  float: left;
-  width: 70%;
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
+  background-color: #FAEBD7;
   padding: 20px;
-  background-color: white;
-}
-
-/* Clear floats after the columns */
-section::after {
-  content: "";
-  display: table;
-  clear: both;
 }
 
 /* Style the footer */
 footer {
-  background-color: #666;
+  background-color: #A52A2A;
   padding: 10px;
   text-align: center;
   color: white;
 }
 
-/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+/* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
 @media (max-width: 600px) {
-  nav, article {
-    width: 100%;
-    height: auto;
+  section {
+    -webkit-flex-direction: column;
+    flex-direction: column;
   }
 }
 

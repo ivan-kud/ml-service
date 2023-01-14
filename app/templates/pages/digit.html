@@ -6,7 +6,7 @@
 
 {% block page_content %}
 <form id="myForm" method="post">
-    <h4 id="step1">1. Select a model</h4>
+    <h4>1. Select a model</h4>
     <label for="model_name">Model:</label>
     <select name="model_name" id="model_name">
         {% if model_name is not defined %}{% set model_name = "conv5" %}{% endif %}
@@ -17,13 +17,13 @@
         <option value="all" {% if model_name == "all" %}selected{% endif %}>All models</option>
     </select>
     <br>
-    <h4 id="step2">2. Draw a digit and submit</h4>
+    <h4>2. Draw a digit and submit</h4>
     <canvas id="canvas" width="28" height="28" style="border: 1px solid #000; background:#fff; width:420px; height:420px;"></canvas>
     <br>
     <input type="hidden" id="image" name="image" value="{{ image }}">
     <input type="button" value="Clear" onclick="clearCanvas()" style="width: 10em;">
     <input type="button" value="Submit" onclick="submitCanvas()" style="width: 10em;">
-    <h4 id="step3">3. Get the result</h4>
+    <h4>3. Get the result</h4>
     <p class="output" id="output1">{{ output1 }}&nbsp</p>
     <p class="output" id="output2">{{ output2 }}&nbsp</p>
     <br>
