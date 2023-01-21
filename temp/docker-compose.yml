@@ -1,6 +1,6 @@
-version: "3.7"
 services:
-  web:
+  api:
     image: ivankud/temp
+    build: ./
     ports:
       - "80:80"
