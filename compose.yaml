@@ -1,6 +1,5 @@
 services:
   api:
-    image: ivankud/temp
     build: ./
     ports:
       - "80:80"
