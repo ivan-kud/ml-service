@@ -1,5 +1,5 @@
 # Service with some ML models
-[Here](FIXME) is my service where you can apply machine learning models to solve some problems, such as:
+[Here](http://mlservice.ivankud.com/) is my service where you can apply machine learning models to solve some problems, such as:
 - Digit classification
 
 **Technical description:**
