@@ -38,3 +38,20 @@ docker compose start
 
 # Remove the containers, networks, and volumes
 docker compose down
+
+# A f t e r   D r o p l e t   c r e a t i o n
+# SSH to host
+ssh root@xxx.xxx.xxx.xxx
+# Install updates
+apt-get update && apt-get upgrade
+# Clone repository
+git clone https://github.com/ivan-kud/ml-service.git
+# Go to directory
+cd ml-service
+# Build image and start container
+docker compose up -d
+# Install certificate
+snap install core; snap refresh core
+apt-get remove certbot
+snap install --classic certbot
+ln -s /snap/bin/certbot /usr/bin/certbot
