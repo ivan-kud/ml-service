@@ -45,7 +45,6 @@ rm -r ml-service
 git clone https://github.com/ivan-kud/ml-service.git
 cd ml-service
 docker network create traefik-public
-docker compose up -d
 docker compose -f compose.traefik.yaml up -d
 docker compose -f compose.fastapi.yaml up -d
 
