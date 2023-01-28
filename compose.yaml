@@ -2,18 +2,25 @@ services:
   fastapi:
     build: ./
     restart: unless-stopped
-#    ports: # old
+#    ports: # old, for local deployment
 #      - "80:80" # old, for local deployment
     labels:
       - traefik.enable=true # 2, 3
       - traefik.http.services.app.loadbalancer.server.port=80 # 2
       - traefik.http.routers.app-http.entrypoints=http # 2
       - traefik.http.routers.app-http.rule=Host(`ivankud.com`) # 2, 3
-      - traefik.docker.network=traefic-public
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.app-https.entrypoints=https # 2
+      - traefik.http.routers.app-https.rule=Host(`ivankud.com`) # 2
+      - traefik.http.routers.app-https.tls=true # 2
 #      - traefik.http.routers.app-http.tls=true # 3
+      - traefik.http.routers.app-https.tls.certresolver=le # 2
 #      - traefik.http.routers.app-http.tls.certresolver=letsencrypt # 3
+      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https # 2
+      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true # 2
+      - traefik.http.routers.app-http.middlewares=https-redirect # 2
     networks:
-      - traefic-public # 2
+      - traefik-public # 2
 
   traefik:
 #    image: traefik:v2.2 # 1 digitalocean
@@ -22,25 +29,30 @@ services:
 #    image: traefik:v2.8 # 4 unixhost
     restart: unless-stopped
     ports:
-      - "80:80"
-#      - "443:443" # 3
+      - "80:80" # 2, 3
+      - "443:443" # 2, 3
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # 2, 3
-#      - $PWD/services/traefik/traefik.toml:/etc/traefik/traefik.toml # 3
-#      - traefik-public-certificates:/certificates # 3
+      - traefik-public-certificates:/certificates # 2, 3
     command:
-      - --providers.docker # 2
-      - --providers.docker.exposedbydefault=false # 2
-      - --entrypoints.http.address=:80 # 2
-      - --accesslog # 2
+      - --providers.docker # 2, 3
+      - --providers.docker.exposedbydefault=false # 2, 3
+      - --entrypoints.http.address=:80 # 2, 3
+      - --entrypoints.https.address=:443 # 2, 3
+      - --certificatesresolvers.le.acme.email=ivan.kudashkin@gmail.com # 2, 3
+      - --certificatesresolvers.le.acme.storage=/certificates/acme.json # 2
+#      - --certificatesresolvers.le.acme.storage=acme.json # 3
+      - --certificatesresolvers.le.acme.tlschallenge=true # 2
+#      - --certificatesresolvers.le.acme.httpchallenge... # 3
+      - --accesslog # 2, 3
       - --log # 2
     networks:
-      - traefic-public # 2
+      - traefik-public # 2
+
+volumes:
+  traefik-public-certificates: # 2, 3
 
 networks:
-  traefic-public: # 2
+  traefik-public: # 2
     external: true # 2
 #    external: false # for local deployment
-
-#volumes:
-#  traefik-public-certificates: # 3

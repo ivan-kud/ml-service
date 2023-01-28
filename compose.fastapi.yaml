@@ -3,14 +3,21 @@ services:
     build: ./
     restart: unless-stopped
     labels:
-      - traefik.enable=true
-      - traefik.http.services.app.loadbalancer.server.port=80
-      - traefik.http.routers.app-http.entrypoints=http
-      - traefik.http.routers.app-http.rule=Host(`ivankud.com`)
+      - traefik.enable=true # 2, 3
+      - traefik.http.services.app.loadbalancer.server.port=80 # 2
+      - traefik.http.routers.app-http.entrypoints=http # 2
+      - traefik.http.routers.app-http.rule=Host(`ivankud.com`) # 2, 3
       - traefik.docker.network=traefik-public
+      - traefik.http.routers.app-https.entrypoints=https # 2
+      - traefik.http.routers.app-https.rule=Host(`ivankud.com`) # 2
+      - traefik.http.routers.app-https.tls=true # 2
+      - traefik.http.routers.app-https.tls.certresolver=le # 2
+      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https # 2
+      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true # 2
+      - traefik.http.routers.app-http.middlewares=https-redirect # 2
     networks:
-      - traefik-public
+      - traefik-public # 2
 
 networks:
-  traefik-public:
-    external: true
+  traefik-public: # 2
+    external: true # 2
