@@ -1,0 +1,20 @@
+services:
+  traefik:
+    image: traefik:v2.3
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.http.address=:80
+      - --accesslog
+      - --log
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true

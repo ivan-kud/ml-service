@@ -40,6 +40,17 @@ docker compose start
 docker compose down
 
 
+
+rm -r ml-service
+git clone https://github.com/ivan-kud/ml-service.git
+cd ml-service
+docker network create traefic-public
+docker compose up -d
+docker compose -f compose.traefic.yaml up -d
+docker compose -f compose.fastapi.yaml up -d
+
+
+
 ###############################################
 # A f t e r   D r o p l e t   c r e a t i o n #
 ###############################################
