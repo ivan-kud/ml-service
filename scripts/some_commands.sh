@@ -26,9 +26,9 @@ docker compose up -d
 # SSH to host as 'root'
 ssh root@ivankud.com
 # Add environment variables
-export USERNAME=xxxxxxxx
-export PASSWORD=xxxxxxxx
-export HASHED_PASSWORD=$(openssl passwd -apr1 $PASSWORD)
+export TRAEFIK_USERNAME=xxxxxxxx
+export TRAEFIK_PASSWORD=xxxxxxxx
+export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
 # Down Compose
 cd ml-service
 docker compose down
