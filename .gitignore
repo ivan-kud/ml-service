@@ -4,6 +4,7 @@
 .ipynb_checkpoints
 __pycache__
 *.pyc
+/certificates
 /model-training/data
 /model-training/runs
 /venv/
