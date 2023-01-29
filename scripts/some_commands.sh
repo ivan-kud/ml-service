@@ -13,7 +13,7 @@ git clone https://github.com/ivan-kud/ml-service.git
 # Add environment variables
 export TRAEFIK_USERNAME=xxxxxxxx
 export TRAEFIK_PASSWORD=xxxxxxxx
-export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $PASSWORD)
+export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
 # Create network
 docker network create traefik-public
 # Build images and start containers
