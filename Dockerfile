@@ -8,4 +8,6 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 COPY ./app /app
 
+RUN /app/download_models.sh
+
 CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]

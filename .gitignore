@@ -9,3 +9,4 @@ __pycache__
 /model-training/runs
 /venv/
 /draft.py
+/app/ml-models/mask-rcnn-coco/frozen_inference_graph.pb
