@@ -1,3 +1,4 @@
 __pycache__
 *.pyc
+/app/src/__main__.py
 /app/ml-models/mask-rcnn-coco/frozen_inference_graph.pb

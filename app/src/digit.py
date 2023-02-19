@@ -14,7 +14,7 @@ CLASSES = 10
 CHANNELS = 1
 DATA_MEAN, DATA_STD = 0.13, 0.31
 DATA_SUBZERO = (0 - DATA_MEAN) / DATA_STD
-MODEL_PATH = 'ml-models/'
+MODEL_PATH = './ml-models/'
 
 
 class LogRegModel(nn.Module):
