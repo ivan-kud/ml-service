@@ -7,7 +7,8 @@ __pycache__
 /certificates
 /model-training/data
 /model-training/runs
-/venv/
+/venv
 /draft.py
 /model-training/Untitled.ipynb
+/model-training/torchvision_pretrained.ipynb
 /app/ml-models/mask-rcnn-coco/frozen_inference_graph.pb

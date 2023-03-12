@@ -1,4 +1,4 @@
-fastapi>=0.89.0,<0.90.0
+fastapi==0.94.0
 uvicorn[standard]
 aiofiles
 python-multipart
@@ -7,4 +7,4 @@ Pillow
 numpy
 torch>=1.13.0,<1.14.0
 torchvision>=0.14.0,<0.15.0
-opencv-python>=4.7.0.0,<4.8.0.0
+opencv-python

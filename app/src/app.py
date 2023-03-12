@@ -32,6 +32,6 @@ def predict_digit(request: Request,
 
 
 @app.get('/person', response_class=HTMLResponse)
-def read_person(request: Request):
+def read_instance(request: Request):
     return templates.TemplateResponse('pages/person.html',
                                       {'request': request})

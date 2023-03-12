@@ -118,16 +118,6 @@ class ModelName(str, Enum):
     all = 'all'
 
 
-# Load models
-models = {ModelName.logreg: LogRegModel(),
-          ModelName.dense3: Dense3Model(),
-          ModelName.conv3: Conv3Model(),
-          ModelName.conv5: Conv5Model((32, 32, 32, 64))}
-for name, model in models.items():
-    path = MODEL_PATH + 'digit_' + name + '.pt'
-    model.load_state_dict(torch.load(path))
-
-
 def preprocess_image(img: str) -> torch.Tensor:
     # Convert to PIL image (RGBA)
     image_base64 = img.split(';base64,')[1]
@@ -182,3 +172,13 @@ def get_response_data(model_name: ModelName, image: str) -> dict:
         'output1': 'Label: ' + result_str_1,
         'output2': 'Confidence: ' + result_str_2,
     }
+
+
+# Load models
+models = {ModelName.logreg: LogRegModel(),
+          ModelName.dense3: Dense3Model(),
+          ModelName.conv3: Conv3Model(),
+          ModelName.conv5: Conv5Model((32, 32, 32, 64))}
+for name, model in models.items():
+    path = MODEL_PATH + 'digit_' + name + '.pt'
+    model.load_state_dict(torch.load(path))
