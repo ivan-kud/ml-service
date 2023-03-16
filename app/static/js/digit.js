@@ -16,8 +16,6 @@ var prevX = 0,
     prevY = 0,
     currY = 0,
     flag = false,
-    canvasWidthRatio = canvas.clientWidth / canvas.width,
-    canvasHeightRatio = canvas.clientHeight / canvas.height,
     canvasBorderWidth = (canvas.offsetWidth - canvas.clientWidth) / 2,
     canvasBorderHeight = (canvas.offsetHeight - canvas.clientHeight) / 2;
 
@@ -25,15 +23,16 @@ canvas.addEventListener("mousemove", e => findxy('move', e), false);
 canvas.addEventListener("mousedown", e => findxy('down', e), false);
 canvas.addEventListener("mouseup", e => findxy('up', e), false);
 canvas.addEventListener("mouseout", e => findxy('out', e), false);
+canvas.addEventListener("touchmove", e => findxy('move', e), false);
+canvas.addEventListener("touchstart", e => findxy('down', e), false);
+canvas.addEventListener("touchend", e => findxy('up', e), false);
 
 // store canvas data while submitting the form
 var var_img = new Image;
 var_img.onload = function() {
     ctx.drawImage(var_img, 0, 0);
-}
-if (image.value != "") {
-    var_img.src = image.value;
-}
+};
+if (image.value != "") var_img.src = image.value;
 
 function findxy(res, e) {
     if (res == 'down') {
@@ -53,8 +52,8 @@ function findxy(res, e) {
     }
 }
 
-const getX = (e) => (e.clientX - canvas.getBoundingClientRect().left - canvasBorderWidth) / canvasWidthRatio;
-const getY = (e) => (e.clientY - canvas.getBoundingClientRect().top - canvasBorderHeight) / canvasHeightRatio;
+const getX = (e) => (e.clientX - canvas.getBoundingClientRect().left - canvasBorderWidth) * canvas.width / canvas.clientWidth;
+const getY = (e) => (e.clientY - canvas.getBoundingClientRect().top - canvasBorderHeight) * canvas.height / canvas.clientHeight;
 
 function draw() {
     ctx.beginPath();

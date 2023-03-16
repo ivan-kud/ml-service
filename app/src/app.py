@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from . import digit
+from . import instance
 
 
 app = FastAPI()
@@ -31,7 +32,15 @@ def predict_digit(request: Request,
     return templates.TemplateResponse('pages/digit.html', response_data)
 
 
-@app.get('/person', response_class=HTMLResponse)
+@app.get('/instance', response_class=HTMLResponse)
 def read_instance(request: Request):
-    return templates.TemplateResponse('pages/person.html',
+    return templates.TemplateResponse('pages/instance.html',
                                       {'request': request})
+
+
+@app.post('/instance', response_class=HTMLResponse)
+def predict_instance(request: Request,
+                     file: UploadFile):
+    response_data = instance.get_response_data(file)
+    response_data.update({'request': request})
+    return templates.TemplateResponse('pages/instance.html', response_data)

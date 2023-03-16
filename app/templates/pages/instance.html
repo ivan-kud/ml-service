@@ -1,0 +1,20 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Instance segmentation{% endblock %}
+
+{% block header %}<h1>Instance segmentation</h1>{% endblock %}
+
+{% block page_content %}
+<form id="myForm" method="post" enctype="multipart/form-data">
+    <h4>1. Upload a file</h4>
+    <input type="file" name="file" accept="image/png, image/jpeg">
+    <br>
+    <br>
+    <input type="submit" value="Submit">
+    <br>
+    <h4>2. Get the result</h4>
+    <img src="{{ image }}" alt="Segmented image">
+    <p class="output">{{ info }}&nbsp</p>
+    <br>
+</form>
+{% endblock %}

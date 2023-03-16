@@ -1,12 +1,14 @@
 import base64
+import binascii
 from enum import Enum
 import io
 
-from PIL import Image
+import PIL
 import PIL.ImageOps
+from PIL import Image
 import torch
 from torch import nn
-import torchvision
+from torchvision.transforms.functional import to_tensor
 
 
 IMG_WIDTH, IMG_HEIGHT = 28, 28
@@ -119,17 +121,17 @@ class ModelName(str, Enum):
 
 
 def preprocess_image(img: str) -> torch.Tensor:
-    # Convert to PIL image (RGBA)
-    image_base64 = img.split(';base64,')[1]
+    # Convert base64 encoded PNG image to byte array
+    image_base64 = img.split(';base64,')[-1]
     image_bytes = base64.b64decode(image_base64)
 
-    # Convert to PIL, convert to grayscale, invert
+    # Open by PIL, convert to grayscale, invert
     pil_image = Image.open(io.BytesIO(image_bytes))
     pil_image = pil_image.convert('L')
     pil_image = PIL.ImageOps.invert(pil_image)
 
     # Transform to Tensor, normalize, add dimension
-    image_tensor = torchvision.transforms.functional.to_tensor(pil_image)
+    image_tensor = to_tensor(pil_image)
     image_tensor = (image_tensor - DATA_MEAN) / DATA_STD
     image_tensor = torch.unsqueeze(image_tensor, dim=0)
 
@@ -148,13 +150,41 @@ def predict(model: nn.Module, image: torch.Tensor) -> tuple[float, int]:
 
 def get_response_data(model_name: ModelName, image: str) -> dict:
     # Preprocess image to use it as model input
-    image_tensor = preprocess_image(image)
+    try:
+        image_tensor = preprocess_image(image)
+    except binascii.Error:
+        err_type = 'binascii.Error'
+        err_msg = 'String of base64 image is incorrectly padded'
+        print(f'{err_type}: {err_msg}')
+        return {'model_name': '', 'image': '',
+                'output1': err_type, 'output2': err_msg}
+    except PIL.UnidentifiedImageError as err:
+        err_type = 'PIL.UnidentifiedImageError'
+        print(f'{err_type}: {err}')
+        return {'model_name': '', 'image': '',
+                'output1': err_type, 'output2': str(err)}
+    except Exception as err:
+        err_type = 'Exception'
+        print(f'{err_type}: {err}')
+        return {'model_name': '', 'image': '',
+                'output1': err_type, 'output2': str(err)}
 
     # Predict
     result = {}
     for name, model in models.items():
         if model_name is ModelName.all or model_name == name:
-            result[name] = predict(model, image_tensor)
+            try:
+                result[name] = predict(model, image_tensor)
+            except RuntimeError as err:
+                err_type = 'RuntimeError'
+                print(f'{err_type}: {err}')
+                return {'model_name': '', 'image': '',
+                        'output1': err_type, 'output2': str(err)}
+            except Exception as err:
+                err_type = 'Exception'
+                print(f'{err_type}: {err}')
+                return {'model_name': '', 'image': '',
+                        'output1': err_type, 'output2': str(err)}
 
     # Form result as strings
     if len(result) == 1:
