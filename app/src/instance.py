@@ -1,5 +1,6 @@
 import base64
 import random
+import tempfile
 
 import cv2 as cv
 from fastapi import UploadFile
@@ -7,7 +8,8 @@ import numpy as np
 
 
 MODEL_PATH = './ml-models/mask-rcnn-coco/'
-MAX_SIZE = 5000
+MAX_SIZE = 10000
+MAX_SIZE_MODEL = 1024
 
 
 def draw_masks(image, boxes, masks, conf_threshold=0.5, mask_threshold=0.3):
@@ -97,47 +99,73 @@ def get_color(class_id, color_per_class=False):
 
 
 def get_response_data(file: UploadFile) -> dict:
-    # Read image
+    # Convert UploadFile to OpenCV image
     file_array = np.fromfile(file.file, np.uint8)
+    if len(file_array) == 0:  # empty file check
+        msg = 'Choose a file.'
+        return {'info': msg}
     img = cv.imdecode(file_array, cv.IMREAD_COLOR)
-    if img is None:
-        err_msg = 'Error! Image must be in JPEG or PNG format.'
-        return {
-            'info': err_msg,
-        }
+    if img is None:  # operation status check
+        msg = 'Image must be in JPEG or PNG format. Choose another file.'
+        return {'info': msg}
 
-    # Check image size
+    # Check for maximum image size
     height, width = img.shape[:2]
     if height > MAX_SIZE or width > MAX_SIZE:
-        err_msg = 'Error! Image width and height must be less than 5000px.'
-        return {
-            'info': err_msg,
-        }
+        msg = 'Image width and height must be less than 5000px.'\
+              + ' Choose another file.'
+        return {'info': msg}
+
+    # Resize image for better Mask R-CNN performance
+    if max(width, height) > MAX_SIZE_MODEL:
+        aspect_ratio = width / height
+        if aspect_ratio > 1.0:
+            shape = (MAX_SIZE_MODEL, int(MAX_SIZE_MODEL / aspect_ratio))
+        else:
+            shape = (int(MAX_SIZE_MODEL * aspect_ratio), MAX_SIZE_MODEL)
+        img = cv.resize(img, shape, interpolation=cv.INTER_AREA)
 
     # Apply the model
-    blob = cv.dnn.blobFromImage(img, swapRB=True, crop=False)
-    model.setInput(blob)
-    boxes, masks = model.forward(['detection_out_final', 'detection_masks'])
+    try:
+        blob = cv.dnn.blobFromImage(img, swapRB=True, crop=False)
+        model.setInput(blob)
+        boxes, masks = model.forward(['detection_out_final',
+                                      'detection_masks'])
+    except Exception as err:
+        err_type = 'Exception'
+        print(f'{__name__, err_type}: {err}')
+        return {'info': f'{err_type}: {err}'}
 
     # Draw masks, boxes and confidences for each of the detected objects
     draw_masks(img, boxes, masks)
     draw_boxes(img, boxes)
     draw_confs(img, boxes)
 
+    # Convert OpenCV image to base64 string
+    status, file_array = cv.imencode('.jpg', img)
+    if not status:
+        err_type = 'Error'
+        err_msg = "OpenCV can't encode image"
+        print(f'{__name__, err_type}: {err_msg}')
+        return {'info': f'{err_type}: {err_msg}'}
+    with tempfile.SpooledTemporaryFile() as fp:
+        file_array.tofile(fp)
+        fp.seek(0)
+        bytes_array = base64.b64encode(fp.read())
+    image_base64 = 'data:image/jpeg;base64,'
+    try:
+        image_base64 += bytes_array.decode()
+    except UnicodeError as err:
+        err_type = 'UnicodeError'
+        print(f'{__name__, err_type}: {err}')
+        return {'info': f'{err_type}: {err}'}
+
     # Form the info string
     t, _ = model.getPerfProfile()
     info = 'Done! Inference time: '\
-           + f'{int(t * 1000.0/ cv.getTickFrequency())} ms.'
+           + f'{int(t * 1000.0 / cv.getTickFrequency())} ms.'
 
-    # Convert image to base64 string
-    file.file.seek(0)
-    image_base64 = 'data:' + file.content_type + ';base64,'\
-                   + base64.b64encode(file.file.read()).decode()
-
-    return {
-        'image': image_base64,
-        'info': info,
-    }
+    return {'image': image_base64, 'info': info}
 
 
 # Load the model
@@ -149,21 +177,8 @@ model.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
 model.setPreferableTarget(cv.dnn.DNN_TARGET_CPU)
 
 # Load names of classes
-with open(MODEL_PATH + 'labels.txt') as f:
+with open(MODEL_PATH + 'labels.txt', 'r') as f:
     classes = f.read().split('\n')
 
 # Define colors for masks
 object_colors = np.random.randint(0, 255, (len(classes), 3))
-
-
-if __name__ == '__main__':
-    pass
-    # img_path = '/Users/admin/Downloads/People.jpeg'
-    # img_path = '/Users/admin/Downloads/People.png'
-    # img_path = '/Users/admin/Downloads/Smallest.jpg'
-    # get_response_data(img_path)
-
-    # Show image
-    # cv.imshow('Image', img)
-    # cv.waitKey(0)
-    # cv.destroyAllWindows()

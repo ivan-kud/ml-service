@@ -18,7 +18,7 @@
     </select>
     <br>
     <h4>2. Draw a digit and submit</h4>
-    <canvas id="canvas" width="28" height="28" style="border: 1px solid #000; background:#fff; width:100%; max-width: 420px; aspect-ratio: 1 / 1;"></canvas>
+    <canvas id="canvas" width="28" height="28" style="border: 1px solid #000; background:#fff; width:100%; max-width:420px; aspect-ratio: 1 / 1;"></canvas>
     <br>
     <input type="hidden" id="image" name="image" value="{{ image }}">
     <input type="button" value="Clear" onclick="clearCanvas()" style="width: 10em;">
@@ -31,10 +31,10 @@
 <b class="details">Technical details:</b>
 <ul class="details">
     <li>The models were trained on MNIST dataset using PyTorch library</li>
-    <li style="white-space:pre-wrap;">Logistic Regression model:      1 FC layer;   7.8e3 parameters; validation accuracy 90.18 %</li>
-    <li style="white-space:pre-wrap;">Dense model:                    3 FC layers;  5.0e4 parameters; validation accuracy 97.35 %</li>
-    <li style="white-space:pre-wrap;">Convolutional (3 layers) model: 2 Conv, 1 FC; 5.0e4 parameters; validation accuracy 99.04 %</li>
-    <li style="white-space:pre-wrap;">Convolutional (5 layers) model: 4 Conv, 1 FC; 5.2e4 parameters; validation accuracy 99.34 %</li>
+    <li style="white-space:pre-wrap;">Logistic Regression model:      1 FC layer;   7.8e3 parameters; validation accuracy 90.18&nbsp%</li>
+    <li style="white-space:pre-wrap;">Dense model:                    3 FC layers;  5.0e4 parameters; validation accuracy 97.35&nbsp%</li>
+    <li style="white-space:pre-wrap;">Convolutional (3 layers) model: 2 Conv, 1 FC; 5.0e4 parameters; validation accuracy 99.04&nbsp%</li>
+    <li style="white-space:pre-wrap;">Convolutional (5 layers) model: 4 Conv, 1 FC; 5.2e4 parameters; validation accuracy 99.34&nbsp%</li>
 </ul>
 {% endblock %}
 

@@ -155,19 +155,16 @@ def get_response_data(model_name: ModelName, image: str) -> dict:
     except binascii.Error:
         err_type = 'binascii.Error'
         err_msg = 'String of base64 image is incorrectly padded'
-        print(f'{err_type}: {err_msg}')
-        return {'model_name': '', 'image': '',
-                'output1': err_type, 'output2': err_msg}
+        print(f'{__name__, err_type}: {err_msg}')
+        return {'output1': err_type, 'output2': err_msg}
     except PIL.UnidentifiedImageError as err:
         err_type = 'PIL.UnidentifiedImageError'
-        print(f'{err_type}: {err}')
-        return {'model_name': '', 'image': '',
-                'output1': err_type, 'output2': str(err)}
+        print(f'{__name__, err_type}: {err}')
+        return {'output1': err_type, 'output2': str(err)}
     except Exception as err:
         err_type = 'Exception'
-        print(f'{err_type}: {err}')
-        return {'model_name': '', 'image': '',
-                'output1': err_type, 'output2': str(err)}
+        print(f'{__name__, err_type}: {err}')
+        return {'output1': err_type, 'output2': str(err)}
 
     # Predict
     result = {}
@@ -177,14 +174,12 @@ def get_response_data(model_name: ModelName, image: str) -> dict:
                 result[name] = predict(model, image_tensor)
             except RuntimeError as err:
                 err_type = 'RuntimeError'
-                print(f'{err_type}: {err}')
-                return {'model_name': '', 'image': '',
-                        'output1': err_type, 'output2': str(err)}
+                print(f'{__name__, err_type}: {err}')
+                return {'output1': err_type, 'output2': str(err)}
             except Exception as err:
                 err_type = 'Exception'
-                print(f'{err_type}: {err}')
-                return {'model_name': '', 'image': '',
-                        'output1': err_type, 'output2': str(err)}
+                print(f'{__name__, err_type}: {err}')
+                return {'output1': err_type, 'output2': str(err)}
 
     # Form result as strings
     if len(result) == 1:
