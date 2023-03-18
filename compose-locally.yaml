@@ -4,6 +4,5 @@ services:
       context: ./
       dockerfile: Dockerfile-locally
     image: ivankud/ml-service
-    restart: unless-stopped
     ports:
       - "80:80"
