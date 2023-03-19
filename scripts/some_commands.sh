@@ -20,6 +20,26 @@ docker network create traefik-public
 cd ml-service
 docker compose up -d
 
+
+#######################################
+# D e p l o y   n e w   v e r s i o n #
+#######################################
+cd ml-service
+export TRAEFIK_USERNAME=xxxxxxxx
+export TRAEFIK_PASSWORD=xxxxxxxx
+export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
+docker compose stop
+docker container ls -a
+docker rm CONTAINER_ID
+docker images
+docker rmi ml-service-fastapi
+cd ..
+rm -rf ml-service
+git clone https://github.com/ivan-kud/ml-service.git
+cd ml-service
+docker compose up -d
+
+
 #################################
 # U s e f u l   C o m m a n d s #
 #################################

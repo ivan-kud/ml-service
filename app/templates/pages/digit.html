@@ -18,11 +18,11 @@
     </select>
     <br>
     <h4>2. Draw a digit and submit</h4>
-    <canvas id="canvas" width="28" height="28" style="border: 1px solid #000; background:#fff; width:100%; max-width:420px; aspect-ratio: 1 / 1;"></canvas>
+    <canvas id="canvas" width="28" height="28" style="border: 1px solid #000; background:#fff; width:100%; max-width:420px; aspect-ratio: 1 / 1; cursor: crosshair;"></canvas>
     <br>
     <input type="hidden" id="image" name="image" value="{{ image }}">
     <input type="button" value="Clear" onclick="clearCanvas()" style="width: 10em;">
-    <input type="button" value="Submit" onclick="submitCanvas()" style="width: 10em;">
+    <input type="button" id="submitBtn" value="Submit" onclick="submitForm()" style="width: 10em;">
     <h4>3. Get the result</h4>
     <p class="output" id="output1">{{ output1 }}&nbsp</p>
     <p class="output" id="output2">{{ output2 }}&nbsp</p>
