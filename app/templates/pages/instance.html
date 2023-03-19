@@ -16,7 +16,11 @@
     {% if image is defined %}
     <img src="{{ image }}" alt="Segmented image" style="max-width:100%;">
     {% endif %}
+    <br>
+    <br>
 </form>
+<b class="details">Technical details:</b>
+<p class="details">Here I used OpenCV library with Mask R-CNN model pretrained on COCO dataset.</p>
 {% endblock %}
 
 {% block scripts %}<script src="/static/js/instance.js"></script>{% endblock %}
