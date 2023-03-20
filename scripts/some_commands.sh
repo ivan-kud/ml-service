@@ -24,13 +24,14 @@ docker compose up -d
 #######################################
 # D e p l o y   n e w   v e r s i o n #
 #######################################
-cd ml-service
+ssh root@ivankud.com
 export TRAEFIK_USERNAME=xxxxxxxx
 export TRAEFIK_PASSWORD=xxxxxxxx
 export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
+cd ml-service
 docker compose stop
 docker container ls -a
-docker rm CONTAINER_ID
+docker rm FASTAPI_CONTAINER_ID
 docker images
 docker rmi ml-service-fastapi
 cd ..
@@ -54,7 +55,7 @@ docker run --rm -it -p 80:80 ivankud/ml-service
 # Login to Docker Hub
 docker login -u ivankud
 # If needed, tag your image with your registry username
-docker tag null/ml-service ivankud/ml-service
+docker tag ml-service-fastapi ivankud/ml-service
 # Push image to Docker Hub repository
 docker push ivankud/ml-service
 # Pull image form Docker Hub repository

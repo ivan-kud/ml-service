@@ -156,15 +156,15 @@ def get_response_data(model_name: ModelName, image: str) -> dict:
         err_type = 'binascii.Error'
         err_msg = 'String of base64 image is incorrectly padded'
         print(f'{__name__, err_type}: {err_msg}')
-        return {'output1': err_type, 'output2': err_msg}
+        return {'output1': f'{err_type}: {err_msg}'}
     except PIL.UnidentifiedImageError as err:
         err_type = 'PIL.UnidentifiedImageError'
         print(f'{__name__, err_type}: {err}')
-        return {'output1': err_type, 'output2': str(err)}
+        return {'output1': f'{err_type}: {err}'}
     except Exception as err:
         err_type = 'Exception'
         print(f'{__name__, err_type}: {err}')
-        return {'output1': err_type, 'output2': str(err)}
+        return {'output1': f'{err_type}: {err}'}
 
     # Predict
     result = {}
@@ -175,11 +175,11 @@ def get_response_data(model_name: ModelName, image: str) -> dict:
             except RuntimeError as err:
                 err_type = 'RuntimeError'
                 print(f'{__name__, err_type}: {err}')
-                return {'output1': err_type, 'output2': str(err)}
+                return {'output1': f'{err_type}: {err}'}
             except Exception as err:
                 err_type = 'Exception'
                 print(f'{__name__, err_type}: {err}')
-                return {'output1': err_type, 'output2': str(err)}
+                return {'output1': f'{err_type}: {err}'}
 
     # Form result as strings
     if len(result) == 1:

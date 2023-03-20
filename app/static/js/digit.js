@@ -1,10 +1,13 @@
 document.addEventListener("DOMContentLoaded", startup);
 
-var output1 = document.getElementById("output1");
-var output2 = document.getElementById("output2");
-var image = document.getElementById("image");
-var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d");
+const output1 = document.getElementById("output1");
+const output2 = document.getElementById("output2");
+const image = document.getElementById("image");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+var currCursorPos = { x: 0, y: 0 };
+var prevCursorPos = currCursorPos;
+var dragging = false;
 
 ctx.lineWidth = 2;
 ctx.lineJoin = "round";
@@ -12,10 +15,6 @@ ctx.lineCap = "round";
 ctx.strokeStyle = "black";
 ctx.fillStyle = "white";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-var currCursorPos = { x: 0, y: 0 };
-var prevCursorPos = currCursorPos;
-var dragging = false;
 
 // store canvas data while submitting the form
 var tempImage = new Image;
@@ -30,89 +29,60 @@ window.onbeforeunload = function(e) {
 };
 
 function startup() {
-    const canvas = document.getElementById("canvas");
-
     // set up mouse events for drawing
     canvas.addEventListener("mousedown", function (e) {
-        prevCursorPos = getCursorPos(e);
+        prevCursorPos = getCursorPos(e.clientX, e.clientY);
         dragging = true;
-    }, false);
+    });
     canvas.addEventListener("mousemove", function (e) {
         if (dragging) {
-            currCursorPos = getCursorPos(e);
+            currCursorPos = getCursorPos(e.clientX, e.clientY);
             draw();
             prevCursorPos = currCursorPos;
         }
-    }, false);
+    });
     canvas.addEventListener("mouseup", function (e) {
         dragging = false;
-    }, false);
+    });
     canvas.addEventListener("mouseout", function (e) {
         dragging = false;
-    }, false);
+    });
 
-    // set up touch events for mobile, etc
+    // set up touch events for drawing
     canvas.addEventListener("touchstart", function (e) {
-        currCursorPos = getTouchPos(e);
-        var touch = e.touches[0];
-        var mouseEvent = new MouseEvent("mousedown", {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        canvas.dispatchEvent(mouseEvent);
-    }, false);
+        e.preventDefault();
+        prevCursorPos = getCursorPos(e.touches[0].clientX, e.touches[0].clientY);
+        dragging = true;
+    });
     canvas.addEventListener("touchmove", function (e) {
-        var touch = e.touches[0];
-        var mouseEvent = new MouseEvent("mousemove", {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        canvas.dispatchEvent(mouseEvent);
-    }, false);
+        e.preventDefault();
+        if (dragging) {
+            currCursorPos = getCursorPos(e.touches[0].clientX, e.touches[0].clientY);
+            draw();
+            prevCursorPos = currCursorPos;
+        }
+    });
     canvas.addEventListener("touchend", function (e) {
-        var mouseEvent = new MouseEvent("mouseup", {});
-        canvas.dispatchEvent(mouseEvent);
-    }, false);
-
-	// prevent scrolling when touching the canvas
-	document.body.addEventListener("touchstart", function (e) {
-		if (e.target == canvas) {
-			e.preventDefault();
-		}
-	}, false);
-	document.body.addEventListener("touchmove", function (e) {
-		if (e.target == canvas) {
-			e.preventDefault();
-		}
-	}, false);
-	document.body.addEventListener("touchend", function (e) {
-		if (e.target == canvas) {
-			e.preventDefault();
-		}
-	}, false);
+        e.preventDefault();
+        dragging = false;
+    });
+    canvas.addEventListener("touchcancel", function (e) {
+        e.preventDefault();
+        dragging = false;
+    });
 
     // restore scroll position
     var scrollPosition = localStorage.getItem('scrollPosition');
     if (scrollPosition) window.scrollTo(0, scrollPosition);
 }
 
-function getCursorPos(e) {
+function getCursorPos(clientX, clientY) {
     const canvasBorderWidth = (canvas.offsetWidth - canvas.clientWidth) / 2;
     const canvasBorderHeight = (canvas.offsetHeight - canvas.clientHeight) / 2;
     var rect = canvas.getBoundingClientRect();
     return {
-        x: (e.clientX - rect.left - canvasBorderWidth) * canvas.width / canvas.clientWidth,
-        y: (e.clientY - rect.top - canvasBorderHeight) * canvas.height / canvas.clientHeight
-    };
-}
-
-function getTouchPos(e) {
-    const canvasBorderWidth = (canvas.offsetWidth - canvas.clientWidth) / 2;
-    const canvasBorderHeight = (canvas.offsetHeight - canvas.clientHeight) / 2;
-    var rect = canvas.getBoundingClientRect();
-    return {
-        x: (e.touches[0].clientX - rect.left - canvasBorderWidth) * canvas.width / canvas.clientWidth,
-        y: (e.touches[0].clientY - rect.top - canvasBorderHeight) * canvas.height / canvas.clientHeight
+        x: (clientX - rect.left - canvasBorderWidth) * canvas.width / canvas.clientWidth,
+        y: (clientY - rect.top - canvasBorderHeight) * canvas.height / canvas.clientHeight
     };
 }
 
@@ -132,8 +102,8 @@ function clearCanvas() {
 
 function submitForm() {
     if (isCanvasBlank()) {
-        output1.innerHTML = '<span style="color:red">Error</span>';
-        output2.innerHTML = 'Can\'t send blank image';
+        output1.innerHTML = 'Can\'t send blank image. Draw a digit please.';
+        output2.innerHTML = '&nbsp';
     } else {
         image.value = canvas.toDataURL();
         document.getElementById('myForm').submit();

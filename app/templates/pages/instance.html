@@ -7,7 +7,7 @@
 {% block page_content %}
 <form id="myForm" method="post" enctype="multipart/form-data">
     <h4>1. Upload an image in JPEG or PNG format</h4>
-    <input type="file" id="file" name="file" accept="image/png, image/jpeg">
+    <input type="file" id="fileBtn" name="file" accept="image/png, image/jpeg">
     <br>
     <br>
     <input type="button" id="submitBtn" value="Submit" onclick="submitForm()">
@@ -16,9 +16,9 @@
     {% if image is defined %}
     <img src="{{ image }}" alt="Segmented image" style="max-width:100%;">
     {% endif %}
-    <br>
-    <br>
 </form>
+<br>
+<hr>
 <b class="details">Technical details:</b>
 <p class="details">Here I used OpenCV library with Mask R-CNN model pretrained on COCO dataset.</p>
 {% endblock %}
