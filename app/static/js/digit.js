@@ -30,50 +30,49 @@ window.onbeforeunload = function(e) {
 
 function startup() {
     // set up mouse events for drawing
-    canvas.addEventListener("mousedown", function (e) {
-        prevCursorPos = getCursorPos(e.clientX, e.clientY);
-        dragging = true;
-    });
-    canvas.addEventListener("mousemove", function (e) {
-        if (dragging) {
-            currCursorPos = getCursorPos(e.clientX, e.clientY);
-            draw();
-            prevCursorPos = currCursorPos;
-        }
-    });
-    canvas.addEventListener("mouseup", function (e) {
-        dragging = false;
-    });
-    canvas.addEventListener("mouseout", function (e) {
-        dragging = false;
-    });
+    canvas.addEventListener("mousedown", e => startDrawing(e.clientX, e.clientY));
+    canvas.addEventListener("mousemove", e => drawing(e.clientX, e.clientY));
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseout", stopDrawing);
 
     // set up touch events for drawing
     canvas.addEventListener("touchstart", function (e) {
         e.preventDefault();
-        prevCursorPos = getCursorPos(e.touches[0].clientX, e.touches[0].clientY);
-        dragging = true;
+        startDrawing(e.touches[0].clientX, e.touches[0].clientY);
     });
     canvas.addEventListener("touchmove", function (e) {
         e.preventDefault();
-        if (dragging) {
-            currCursorPos = getCursorPos(e.touches[0].clientX, e.touches[0].clientY);
-            draw();
-            prevCursorPos = currCursorPos;
-        }
+        drawing(e.touches[0].clientX, e.touches[0].clientY);
     });
     canvas.addEventListener("touchend", function (e) {
         e.preventDefault();
-        dragging = false;
+        stopDrawing();
     });
     canvas.addEventListener("touchcancel", function (e) {
         e.preventDefault();
-        dragging = false;
+        stopDrawing();
     });
 
     // restore scroll position
     var scrollPosition = localStorage.getItem('scrollPosition');
     if (scrollPosition) window.scrollTo(0, scrollPosition);
+}
+
+function startDrawing(clientX, clientY) {
+    prevCursorPos = getCursorPos(clientX, clientY);
+    dragging = true;
+}
+
+function drawing(clientX, clientY) {
+        if (dragging) {
+            currCursorPos = getCursorPos(clientX, clientY);
+            draw();
+            prevCursorPos = currCursorPos;
+        }
+}
+
+function stopDrawing() {
+    dragging = false;
 }
 
 function getCursorPos(clientX, clientY) {
@@ -102,7 +101,7 @@ function clearCanvas() {
 
 function submitForm() {
     if (isCanvasBlank()) {
-        output1.innerHTML = 'Can\'t send blank image. Draw a digit please.';
+        output1.innerHTML = 'Draw a digit please.';
         output2.innerHTML = '&nbsp';
     } else {
         image.value = canvas.toDataURL();
