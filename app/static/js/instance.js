@@ -6,7 +6,7 @@ function submitForm() {
     if (file.value == null || file.value == "") {
         output.innerHTML = 'Choose a file.';
     } else {
-        output.innerHTML = 'Processing… Please wait up to 8 seconds.';
+        output.innerHTML = 'Processing… Please wait up to 5 seconds.';
         document.getElementById('myForm').submit();
         file.disabled = true;
         submit.disabled = true;
