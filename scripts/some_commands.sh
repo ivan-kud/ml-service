@@ -100,3 +100,6 @@ jupyter-lab
 
 # Run TensorBoard
 tensorboard --logdir=runs
+
+pip install 'huggingface_hub[cli]'
+huggingface-cli delete-cache

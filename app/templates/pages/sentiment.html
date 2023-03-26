@@ -1,0 +1,24 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Sentiment analysis{% endblock %}
+
+{% block header %}<h1>Sentiment Analysis</h1>{% endblock %}
+
+{% block page_content %}
+<form id="myForm" method="post">
+    <h4>1. Write a review about this service in English</h4>
+    <textarea id="text" name="text" maxlength="300" cols="50" rows="5" style="max-width:100%;">{{ text }}</textarea>
+    <br>
+    <br>
+    <input type="button" id="submitBtn" value="Submit" onclick="submitForm()" style="width: 10em;">
+    <h4>2. Get the result</h4>
+    <p class="output" id="output1">{{ output1 }}&nbsp</p>
+    <p class="output" id="output2">{{ output2 }}&nbsp</p>
+</form>
+<br>
+<hr>
+<b class="details">Technical details:</b>
+<p class="details">Here I used 'cardiffnlp/twitter-roberta-base-sentiment' model from Hugging Face.</p>
+{% endblock %}
+
+{% block scripts %}<script src="/static/js/sentiment.js"></script>{% endblock %}

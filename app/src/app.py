@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 
 from . import digit
 from . import instance
+from . import sentiment
 
 
 app = FastAPI()
@@ -44,3 +45,17 @@ def predict_instance(request: Request,
     response_data = instance.get_response_data(file)
     response_data.update({'request': request})
     return templates.TemplateResponse('pages/instance.html', response_data)
+
+
+@app.get('/sentiment', response_class=HTMLResponse)
+def read_digit(request: Request):
+    return templates.TemplateResponse('pages/sentiment.html',
+                                      {'request': request})
+
+
+@app.post('/sentiment', response_class=HTMLResponse)
+def predict_digit(request: Request,
+                  text: str = Form()):
+    response_data = sentiment.get_response_data(text)
+    response_data.update({'request': request})
+    return templates.TemplateResponse('pages/sentiment.html', response_data)
