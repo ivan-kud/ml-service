@@ -106,6 +106,7 @@ function submitForm() {
     } else {
         image.value = canvas.toDataURL();
         document.getElementById('myForm').submit();
+        document.getElementById('clearBtn').disabled = true;
         document.getElementById('submitBtn').disabled = true;
     }
 }

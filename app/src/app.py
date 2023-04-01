@@ -28,9 +28,9 @@ def read_digit(request: Request):
 def predict_digit(request: Request,
                   model_name: digit.ModelName = Form(),
                   image: str = Form()):
-    response_data = digit.get_response_data(model_name, image)
-    response_data.update({'request': request})
-    return templates.TemplateResponse('pages/digit.html', response_data)
+    response = digit.get_response(model_name, image)
+    response.update({'request': request})
+    return templates.TemplateResponse('pages/digit.html', response)
 
 
 @app.get('/instance', response_class=HTMLResponse)
@@ -42,9 +42,9 @@ def read_instance(request: Request):
 @app.post('/instance', response_class=HTMLResponse)
 def predict_instance(request: Request,
                      file: UploadFile):
-    response_data = instance.get_response_data(file)
-    response_data.update({'request': request})
-    return templates.TemplateResponse('pages/instance.html', response_data)
+    response = instance.get_response(file)
+    response.update({'request': request})
+    return templates.TemplateResponse('pages/instance.html', response)
 
 
 @app.get('/sentiment', response_class=HTMLResponse)
@@ -56,6 +56,6 @@ def read_digit(request: Request):
 @app.post('/sentiment', response_class=HTMLResponse)
 def predict_digit(request: Request,
                   text: str = Form()):
-    response_data = sentiment.get_response_data(text)
-    response_data.update({'request': request})
-    return templates.TemplateResponse('pages/sentiment.html', response_data)
+    response = sentiment.get_response(text)
+    response.update({'request': request})
+    return templates.TemplateResponse('pages/sentiment.html', response)

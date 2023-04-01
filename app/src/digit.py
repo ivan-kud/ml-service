@@ -3,6 +3,7 @@ import binascii
 from enum import Enum
 import io
 
+from fastapi import Request
 import PIL
 import PIL.ImageOps
 from PIL import Image
@@ -123,7 +124,10 @@ class ModelName(str, Enum):
 def preprocess_image(img: str) -> torch.Tensor:
     # Convert base64 encoded PNG image to byte array
     image_base64 = img.split(';base64,')[-1]
-    image_bytes = base64.b64decode(image_base64)
+    try:
+        image_bytes = base64.b64decode(image_base64)
+    except binascii.Error:
+        raise binascii.Error('String of base64 image is incorrectly padded')
 
     # Open by PIL, convert to grayscale, invert
     pil_image = Image.open(io.BytesIO(image_bytes))
@@ -138,6 +142,23 @@ def preprocess_image(img: str) -> torch.Tensor:
     return image_tensor
 
 
+def load_model(model_name: ModelName) -> nn.Module:
+    if model_name is ModelName.logreg:
+        model = LogRegModel()
+    elif model_name is ModelName.dense3:
+        model = Dense3Model()
+    elif model_name is ModelName.conv3:
+        model = Conv3Model()
+    elif model_name is ModelName.conv5:
+        model = Conv5Model((32, 32, 32, 64))
+    else:
+        raise ValueError(f'Model name "{str(model_name)}" is undefined.')
+    path = MODEL_PATH + 'digit_' + model_name + '.pt'
+    model.load_state_dict(torch.load(path))
+
+    return model
+
+
 def predict(model: nn.Module, image: torch.Tensor) -> tuple[float, int]:
     model.eval()
     with torch.no_grad():
@@ -148,62 +169,42 @@ def predict(model: nn.Module, image: torch.Tensor) -> tuple[float, int]:
     return proba, label
 
 
-def get_response_data(model_name: ModelName, image: str) -> dict:
+def get_response(model_name: ModelName,
+                 image: str) -> dict[str, str | Request]:
     # Preprocess image to use it as model input
     try:
         image_tensor = preprocess_image(image)
-    except binascii.Error:
-        err_type = 'binascii.Error'
-        err_msg = 'String of base64 image is incorrectly padded'
-        print(f'{__name__, err_type}: {err_msg}')
-        return {'output1': f'{err_type}: {err_msg}'}
-    except PIL.UnidentifiedImageError as err:
-        err_type = 'PIL.UnidentifiedImageError'
-        print(f'{__name__, err_type}: {err}')
-        return {'output1': f'{err_type}: {err}'}
     except Exception as err:
-        err_type = 'Exception'
-        print(f'{__name__, err_type}: {err}')
-        return {'output1': f'{err_type}: {err}'}
+        err_msg = type(err).__name__ + ': ' + str(err)
+        print(f'File "{__name__}",', err_msg)
+        return {'output1': err_msg}
 
-    # Predict
+    # Load model and predict
     result = {}
-    for name, model in models.items():
-        if model_name is ModelName.all or model_name == name:
+    for name in ModelName:
+        if name is not ModelName.all and (model_name is name
+                                          or model_name is ModelName.all):
             try:
+                model = load_model(name)
                 result[name] = predict(model, image_tensor)
-            except RuntimeError as err:
-                err_type = 'RuntimeError'
-                print(f'{__name__, err_type}: {err}')
-                return {'output1': f'{err_type}: {err}'}
             except Exception as err:
-                err_type = 'Exception'
-                print(f'{__name__, err_type}: {err}')
-                return {'output1': f'{err_type}: {err}'}
+                err_msg = type(err).__name__ + ': ' + str(err)
+                print(f'File "{__name__}",', err_msg)
+                return {'output1': err_msg}
 
-    # Form result as strings
+    # Form result strings
     if len(result) == 1:
-        result_str_1 = f'{result[model_name][1]}'
-        result_str_2 = f'{100*result[model_name][0]:.2f} %'
+        output1 = f'{result[model_name][1]}'
+        output2 = f'{100*result[model_name][0]:.2f} %'
     else:
-        result_str_1 = '; '.join([f'{name} - {value[1]}      '
-                                  for name, value in result.items()])
-        result_str_2 = '; '.join([f'{name} - {100*value[0]:.2f} %'
-                                  for name, value in result.items()])
+        output1 = '; '.join([f'{name} - {value[1]}      '
+                            for name, value in result.items()])
+        output2 = '; '.join([f'{name} - {100*value[0]:.2f} %'
+                            for name, value in result.items()])
 
     return {
         'model_name': model_name,
         'image': image,
-        'output1': 'Label: ' + result_str_1,
-        'output2': 'Confidence: ' + result_str_2,
+        'output1': 'Label: ' + output1,
+        'output2': 'Confidence: ' + output2,
     }
-
-
-# Load models
-models = {ModelName.logreg: LogRegModel(),
-          ModelName.dense3: Dense3Model(),
-          ModelName.conv3: Conv3Model(),
-          ModelName.conv5: Conv5Model((32, 32, 32, 64))}
-for name, model in models.items():
-    path = MODEL_PATH + 'digit_' + name + '.pt'
-    model.load_state_dict(torch.load(path))

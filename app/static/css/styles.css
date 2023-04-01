@@ -33,6 +33,10 @@ nav ul {
   padding: 0;
 }
 
+nav ul li {
+  margin: 10px 0;
+}
+
 /* Style the content */
 article {
   -webkit-flex: 3;

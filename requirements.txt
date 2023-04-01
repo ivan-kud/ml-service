@@ -8,4 +8,4 @@ numpy
 opencv-python
 torch==1.13.1
 torchvision==0.14.1
-transformers==4.27.3
+transformers==4.27.4
