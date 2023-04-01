@@ -2,12 +2,10 @@ import time
 
 from fastapi import Request
 import torch
-from transformers import AutoModelForSequenceClassification
-from transformers import AutoTokenizer
+from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
+                          AutoConfig)
 
 
-MODEL = 'cardiffnlp/twitter-roberta-base-sentiment'
-LABELS = ['negative', 'neutral', 'positive']
 MAX_TEXT_LENGTH = 300
 
 
@@ -42,21 +40,17 @@ def preprocess_text(text: str) -> str:
 
 
 @_timer
-def load_tokenizer():
-    tokenizer = AutoTokenizer.from_pretrained(MODEL)
-
-    return tokenizer
-
-
-@_timer
 def load_model():
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+    model_name = 'cardiffnlp/twitter-roberta-base-sentiment-latest'
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    config = AutoConfig.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
 
-    return model
+    return tokenizer, config, model
 
 
 @_timer
-def predict(model, model_input) -> tuple[float, str]:
+def predict(config, model, model_input) -> tuple[float, str]:
     model.eval()
     with torch.no_grad():
         logits = model(**model_input).logits
@@ -64,7 +58,7 @@ def predict(model, model_input) -> tuple[float, str]:
     probabilities = torch.nn.Softmax(dim=1)(logits)
     proba = probabilities.max().item()
     class_id = probabilities.argmax().item()
-    label = LABELS[class_id]
+    label = config.id2label[class_id]
 
     return proba, label
 
@@ -72,11 +66,9 @@ def predict(model, model_input) -> tuple[float, str]:
 def get_response(text: str) -> dict[str, str | Request]:
     try:
         preprocessed_text = preprocess_text(text)
-        tokenizer, token_load_time = load_tokenizer()
+        (tokenizer, config, model), model_load_time = load_model()
         model_input = tokenizer(preprocessed_text, return_tensors='pt')
-        print(type(model_input))
-        model, model_load_time = load_model()
-        (proba, label), inference_time = predict(model, model_input)
+        (proba, label), inference_time = predict(config, model, model_input)
     except InputError as err:
         return {'output1': str(err)}
     except Exception as err:
@@ -85,8 +77,7 @@ def get_response(text: str) -> dict[str, str | Request]:
         return {'output1': err_msg}
 
     # Form the info string
-    info = ('Model load time: '
-            + f'{int((token_load_time + model_load_time) * 1000.0)} ms. '
+    info = (f'Model load time: {int(model_load_time * 1000.0)} ms. '
             + f'Inference time: {int(inference_time * 1000.0)} ms.')
 
     return {
