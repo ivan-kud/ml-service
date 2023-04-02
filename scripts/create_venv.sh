@@ -3,12 +3,15 @@ source venv/bin/activate
 pip install -U pip
 pip install -r requirements.txt
 pip install \
-    tqdm \
-    pandas \
+    ipywidgets \
+    jupyterlab \
+    lckr-jupyterlab-variableinspector \
     matplotlib \
+    nltk \
+    pandas \
+    pyarrow \
+    requests \
     scikit-learn \
     tensorboard \
-    jupyterlab \
-    ipywidgets \
-    lckr-jupyterlab-variableinspector \
-    torch-lr-finder
+    torch-lr-finder \
+    tqdm

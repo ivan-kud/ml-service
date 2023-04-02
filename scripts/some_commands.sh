@@ -25,20 +25,33 @@ docker compose up -d
 # D e p l o y   n e w   v e r s i o n #
 #######################################
 ssh root@ivankud.com
+
+# create envs
 export TRAEFIK_USERNAME=xxxxxxxx
 export TRAEFIK_PASSWORD=xxxxxxxx
 export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
+
+# Stop containers
 cd ml-service
 docker compose stop
+cd ..
+
+# Update source files
+rm -rf ml-service
+git clone https://github.com/ivan-kud/ml-service.git
+
+# Rebuild image
+cd ml-service
+docker build ./ -t ml-service-fastapi
+
+# Delete old container and image
 docker container ls -a
 docker rm FASTAPI_CONTAINER_ID
 docker images
-docker rmi ml-service-fastapi
-cd ..
-rm -rf ml-service
-git clone https://github.com/ivan-kud/ml-service.git
-cd ml-service
-docker compose up -d
+docker rmi FASTAPI_IMAGE_ID
+
+# Start containers (use -d option to detach terminal)
+docker compose up
 
 
 #################################
