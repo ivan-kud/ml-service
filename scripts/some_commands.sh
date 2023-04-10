@@ -2,23 +2,80 @@
 # A f t e r   D r o p l e t   c r e a t i o n #
 ###############################################
 # Change DNS records to new IP
+
 # SSH to host as 'root'
 ssh root@ivankud.com
 # or (if DNS records is still not updated)
-ssh root@xxx.xxx.xxx.xxx
-# Install updates (optional)
-apt update && apt upgrade
+ssh root@<IP-address>
+
+# Install updates and restart droplet (optional)
+apt update && apt upgrade -y
+shutdown -r now
+
+# Setup wireguard (optional, see section below)
+
 # Clone repository
 git clone https://github.com/ivan-kud/ml-service.git
+
 # Add environment variables
-export TRAEFIK_USERNAME=xxxxxxxx
-export TRAEFIK_PASSWORD=xxxxxxxx
+export TRAEFIK_USERNAME=<PASSWORD>
+export TRAEFIK_PASSWORD=<PASSWORD>
 export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
+
 # Create network
 docker network create traefik-public
-# Build images and start containers
+
+# Build images and start containers (use -d option to detach terminal)
 cd ml-service
-docker compose up -d
+docker compose up
+
+
+#################################
+# S e t u p   W i r e G u a r d #
+#################################
+apt install -y wireguard
+wg genkey | tee /etc/wireguard/private.key | wg pubkey | tee /etc/wireguard/public.key
+chmod 600 /etc/wireguard/private.key
+nano /etc/wireguard/wg0.conf
+[Interface]
+PrivateKey = <server_private_key>
+Address = 10.0.0.1/24
+ListenPort = 51820
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+sysctl -p
+ufw allow 51820/udp
+ufw disable
+ufw enable
+systemctl enable wg-quick@wg0.service
+systemctl start wg-quick@wg0.service
+systemctl status wg-quick@wg0.service
+
+# Add configuration for client devices
+wg genkey | tee /etc/wireguard/macbook_private.key | wg pubkey | tee /etc/wireguard/macbook_public.key
+wg genkey | tee /etc/wireguard/android_private.key | wg pubkey | tee /etc/wireguard/android_public.key
+nano /etc/wireguard/wg0.conf
+[Peer]
+PublicKey = <macbook_client_public_key>
+AllowedIPs = 10.0.0.2/32
+
+[Peer]
+PublicKey = <android_client_public_key>
+AllowedIPs = 10.0.0.3/32
+systemctl restart wg-quick@wg0.service
+systemctl status wg-quick@wg0.service
+# Add configuration to clients
+[Interface]
+PrivateKey = <client_private_key>
+Address = <client_VPN_IP_address>/32
+DNS = 8.8.8.8
+
+[Peer]
+PublicKey = <server_public_key>
+Endpoint = <server_IP_address>:51820
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 20
 
 
 #######################################
@@ -27,8 +84,8 @@ docker compose up -d
 ssh root@ivankud.com
 
 # create envs
-export TRAEFIK_USERNAME=xxxxxxxx
-export TRAEFIK_PASSWORD=xxxxxxxx
+export TRAEFIK_USERNAME=<PASSWORD>
+export TRAEFIK_PASSWORD=<PASSWORD>
 export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
 
 # Stop containers
