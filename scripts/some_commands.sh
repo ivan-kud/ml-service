@@ -18,7 +18,7 @@ shutdown -r now
 git clone https://github.com/ivan-kud/ml-service.git
 
 # Add environment variables
-export TRAEFIK_USERNAME=<PASSWORD>
+export TRAEFIK_USERNAME=<USERNAME>
 export TRAEFIK_PASSWORD=<PASSWORD>
 export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
 
@@ -84,7 +84,7 @@ PersistentKeepalive = 20
 ssh root@ivankud.com
 
 # create envs
-export TRAEFIK_USERNAME=<PASSWORD>
+export TRAEFIK_USERNAME=<USERNAME>
 export TRAEFIK_PASSWORD=<PASSWORD>
 export TRAEFIK_HASHED_PASSWORD=$(openssl passwd -apr1 $TRAEFIK_PASSWORD)
 
