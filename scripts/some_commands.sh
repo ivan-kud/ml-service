@@ -103,9 +103,9 @@ docker build ./ -t ml-service-fastapi
 
 # Delete old container and image
 docker container ls -a
-docker rm FASTAPI_CONTAINER_ID
+docker rm <FASTAPI_CONTAINER_ID>
 docker images
-docker rmi FASTAPI_IMAGE_ID
+docker rmi <FASTAPI_IMAGE_ID>
 
 # Start containers (use -d option to detach terminal)
 docker compose up

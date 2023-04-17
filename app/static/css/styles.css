@@ -70,3 +70,8 @@ footer {
   font-family: monospace;
   font-size: 10px;
 }
+
+.svg-link {
+  margin: 5px 20px;
+  text-decoration: none;
+}
