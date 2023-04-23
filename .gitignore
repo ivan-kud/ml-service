@@ -6,8 +6,8 @@
 __pycache__
 *.pyc
 /certificates
-/model-training/data
-/model-training/runs
+/model-training/digit-data
+/model-training/sentiment-data
 /venv
 /draft.py
 /tmp.py
