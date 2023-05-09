@@ -13,12 +13,12 @@ class DatasetError(Exception):
 
 
 class Tokenizer:
-    def __init__(self):
+    def __init__(self, corpus=None):
         self.stop_words = nltk.corpus.stopwords.words('english')
         self.tokenizer = nltk.tokenize.toktok.ToktokTokenizer()
         self.stemmer = nltk.stem.porter.PorterStemmer()
 
-        self.corpus = None
+        self.corpus = corpus
         self.corpus_index = 0
 
     def __call__(self, text: str, return_str: bool = False) -> list[str] | str:
