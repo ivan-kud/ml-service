@@ -65,6 +65,7 @@ PublicKey = <android_client_public_key>
 AllowedIPs = 10.0.0.3/32
 systemctl restart wg-quick@wg0.service
 systemctl status wg-quick@wg0.service
+
 # Add configuration to clients
 [Interface]
 PrivateKey = <client_private_key>

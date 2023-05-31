@@ -7,9 +7,9 @@ pip install \
     gensim \
     ipywidgets \
     jupyterlab \
-    lckr-jupyterlab-variableinspector \
     matplotlib \
     nltk \
+    notebook \
     pandas \
     pyarrow \
     requests \

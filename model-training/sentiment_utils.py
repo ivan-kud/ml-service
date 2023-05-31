@@ -14,7 +14,7 @@ class DatasetError(Exception):
 
 class Tokenizer:
     def __init__(self, corpus=None):
-        self.stop_words = nltk.corpus.stopwords.words('english')
+        self.stop_words = set(nltk.corpus.stopwords.words('english'))
         self.tokenizer = nltk.tokenize.toktok.ToktokTokenizer()
         self.stemmer = nltk.stem.porter.PorterStemmer()
 
@@ -103,7 +103,7 @@ def download_dataset(dataset_name, dataset_conf, dataset_path):
                 file_path = dataset_path + file_name
                 if not os.path.isfile(file_path):
                     with open(file_path, 'wb') as handle:
-                        for data in tqdm(response.iter_content()):
+                        for data in tqdm.tqdm(response.iter_content()):
                             handle.write(data)
     else:
         raise DatasetError(f'Dataset "{dataset_name}" is not valid.')

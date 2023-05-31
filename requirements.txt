@@ -1,4 +1,4 @@
-fastapi==0.95.1
+fastapi==0.95.2
 uvicorn[standard]
 aiofiles
 python-multipart
@@ -6,6 +6,6 @@ jinja2
 Pillow
 numpy
 opencv-python
-torch==1.13.1
-torchvision==0.14.1
-transformers==4.28.1
+torch
+torchvision
+transformers
