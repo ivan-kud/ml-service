@@ -2,8 +2,7 @@ import time
 
 from fastapi import Request
 import torch
-from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
-                          AutoConfig)
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 
 MAX_TEXT_LENGTH = 300
@@ -24,10 +23,11 @@ def _timer(func):
 
 def preprocess_text(text: str) -> str:
     # Check text length
-    if len(text.strip()) < 1:
+    stripped_text = text.strip()
+    if len(stripped_text) < 1:
         raise InputError('Write a review please.')
-    if len(text.strip()) > MAX_TEXT_LENGTH:
-        text = text.strip()[:MAX_TEXT_LENGTH]
+    if len(stripped_text) > MAX_TEXT_LENGTH:
+        text = stripped_text[:MAX_TEXT_LENGTH]
 
     # Replace usernames and links by placeholders
     token_list = []
@@ -43,22 +43,21 @@ def preprocess_text(text: str) -> str:
 def load_model():
     model_name = 'cardiffnlp/twitter-roberta-base-sentiment-latest'
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    config = AutoConfig.from_pretrained(model_name)
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
 
-    return tokenizer, config, model
+    return tokenizer, model
 
 
 @_timer
-def predict(config, model, model_input) -> tuple[float, str]:
+def predict(model, model_input) -> tuple[float, str]:
     model.eval()
     with torch.no_grad():
         logits = model(**model_input).logits
 
-    probabilities = torch.nn.Softmax(dim=1)(logits)
+    probabilities = torch.nn.functional.softmax(logits, dim=-1)
     proba = probabilities.max().item()
     class_id = probabilities.argmax().item()
-    label = config.id2label[class_id]
+    label = model.config.id2label[class_id]
 
     return proba, label
 
@@ -66,9 +65,9 @@ def predict(config, model, model_input) -> tuple[float, str]:
 def get_response(text: str) -> dict[str, str | Request]:
     try:
         preprocessed_text = preprocess_text(text)
-        (tokenizer, config, model), model_load_time = load_model()
+        (tokenizer, model), model_load_time = load_model()
         model_input = tokenizer(preprocessed_text, return_tensors='pt')
-        (proba, label), inference_time = predict(config, model, model_input)
+        (proba, label), inference_time = predict(model, model_input)
     except InputError as err:
         return {'output1': str(err)}
     except Exception as err:

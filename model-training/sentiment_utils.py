@@ -23,7 +23,7 @@ class Tokenizer:
 
     def __call__(self, text: str, return_str: bool = False) -> list[str] | str:
         # To lower case
-        tokens = text.lower()
+        tokens = text.strip(' "').lower()
 
         # Tokenize
         tokens = self.tokenizer.tokenize(tokens)

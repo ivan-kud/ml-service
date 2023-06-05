@@ -48,14 +48,14 @@ def predict_instance(request: Request,
 
 
 @app.get('/sentiment', response_class=HTMLResponse)
-def read_digit(request: Request):
+def read_sentiment(request: Request):
     return templates.TemplateResponse('pages/sentiment.html',
                                       {'request': request})
 
 
 @app.post('/sentiment', response_class=HTMLResponse)
-def predict_digit(request: Request,
-                  text: str = Form()):
+def predict_sentiment(request: Request,
+                      text: str = Form()):
     response = sentiment.get_response(text)
     response.update({'request': request})
     return templates.TemplateResponse('pages/sentiment.html', response)
