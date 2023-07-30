@@ -7,14 +7,14 @@
 {% block page_content %}
 <form id="myForm" method="post">
     <h4>1. Select a model</h4>
-    <label for="model_name">Model:</label>
-    <select name="model_name" id="model_name">
-        {% if model_name is not defined %}{% set model_name = "conv5" %}{% endif %}
-        <option value="logreg" {% if model_name == "logreg" %}selected{% endif %}>Logistic Regression</option>
-        <option value="dense3" {% if model_name == "dense3" %}selected{% endif %}>Dense (3 layers)</option>
-        <option value="conv3" {% if model_name == "conv3" %}selected{% endif %}>Convolutional (3 layers)</option>
-        <option value="conv5" {% if model_name == "conv5" %}selected{% endif %}>Convolutional (5 layers)</option>
-        <option value="all" {% if model_name == "all" %}selected{% endif %}>All models</option>
+    <label for="model">Model:</label>
+    <select name="model" id="model">
+        {% if model is not defined %}{% set model = "conv5" %}{% endif %}
+        <option value="logreg" {% if model == "logreg" %}selected{% endif %}>Logistic Regression</option>
+        <option value="dense3" {% if model == "dense3" %}selected{% endif %}>Dense (3 layers)</option>
+        <option value="conv3" {% if model == "conv3" %}selected{% endif %}>Convolutional (3 layers)</option>
+        <option value="conv5" {% if model == "conv5" %}selected{% endif %}>Convolutional (5 layers)</option>
+        <option value="all" {% if model == "all" %}selected{% endif %}>All models</option>
     </select>
     <br>
     <h4>2. Draw a digit and submit</h4>

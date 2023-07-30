@@ -203,7 +203,7 @@ def get_response(model_name: ModelName,
                             for name, value in result.items()])
 
     return {
-        'model_name': model_name,
+        'model': model_name,
         'image': image,
         'output1': 'Label: ' + output1,
         'output2': 'Confidence: ' + output2,

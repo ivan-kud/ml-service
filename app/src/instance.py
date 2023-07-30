@@ -1,11 +1,10 @@
-import base64
 import random
-import tempfile
-import time
 
 import cv2 as cv
 from fastapi import UploadFile, Request
 import numpy as np
+
+from . import file2opencv, opencv2base64, InputError, _timer
 
 
 MODEL_PATH = './ml-models/mask-rcnn-coco/'
@@ -14,19 +13,6 @@ IMAGE_MAX_SIZE_MODEL = 1024
 with open(MODEL_PATH + 'labels.txt', 'r') as f:
     LABELS = f.read().split('\n')
 COLORS = np.random.randint(0, 255, (len(LABELS), 3))
-
-
-class InputError(Exception):
-    pass
-
-
-def _timer(func):
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        func_return = func(*args, **kwargs)
-        end_time = time.time()
-        return func_return, (end_time - start_time)
-    return wrapper
 
 
 def draw_masks(image, boxes, masks, conf_threshold=0.5, mask_threshold=0.3):
@@ -115,47 +101,14 @@ def get_color(class_id, color_per_class=False):
     return color
 
 
-def file2image(file: UploadFile) -> np.ndarray:
-    """Convert UploadFile to OpenCV image"""
-    # Convert UploadFile to numpy array
-    file_array = np.fromfile(file.file, np.uint8)
-
-    # Check for empty file
-    if len(file_array) == 0:
-        raise InputError('Choose a file.')
-
-    # Convert numpy array to OpenCV image
-    image = cv.imdecode(file_array, cv.IMREAD_COLOR)
-    if image is None:  # check operation status
-        raise InputError('Image must be in JPEG or PNG format.'
-                         + ' Choose another file.')
-    return image
-
-
-def image2base64(image: np.ndarray) -> str:
-    """Convert OpenCV image to base64 string"""
-    # Encode OpenCV image to numpy array of JPEG image format
-    status, file_array = cv.imencode('.jpg', image)
-    if not status:
-        raise ValueError("OpenCV can't encode image to JPEG format.")
-
-    # Convert numpy array to temporary file and encode to base64 format string
-    with tempfile.SpooledTemporaryFile() as fp:
-        file_array.tofile(fp)
-        fp.seek(0)
-        bytes_array = base64.b64encode(fp.read())
-    image_base64 = 'data:image/jpeg;base64,'
-    image_base64 += bytes_array.decode()
-
-    return image_base64
-
-
 def preprocess_image(image: np.ndarray) -> np.ndarray:
     # Check for maximum image size
     height, width = image.shape[:2]
     if height > IMAGE_MAX_SIZE or width > IMAGE_MAX_SIZE:
-        raise InputError('Image width and height must be less than 5000px.'
-                         + ' Choose another file.')
+        raise InputError(
+            f'Image width and height must be less than {IMAGE_MAX_SIZE}px.'
+            + ' Choose another file.'
+        )
 
     # Resize image for better Mask R-CNN performance
     if max(width, height) > IMAGE_MAX_SIZE_MODEL:
@@ -193,14 +146,14 @@ def predict(model: cv.dnn.Net, image: np.ndarray):
 
 def get_response(file: UploadFile) -> dict[str, str | Request]:
     try:
-        img = file2image(file)
-        img = preprocess_image(img)
+        image = file2opencv(file)
+        image = preprocess_image(image)
         model, load_time = load_model()
-        boxes, masks = predict(model, img)
-        draw_masks(img, boxes, masks)
-        draw_boxes(img, boxes)
-        draw_confs(img, boxes)
-        image_base64 = image2base64(img)
+        boxes, masks = predict(model, image)
+        draw_masks(image, boxes, masks)
+        draw_boxes(image, boxes)
+        draw_confs(image, boxes)
+        image_base64 = opencv2base64(image)
     except InputError as err:
         return {'info': str(err)}
     except Exception as err:

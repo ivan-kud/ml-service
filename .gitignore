@@ -9,8 +9,6 @@ __pycache__
 /model-training/digit-data
 /model-training/sentiment-data
 /venv
-/draft.py
 /tmp.py
-/model-training/Untitled.ipynb
-/model-training/torchvision_pretrained.ipynb
+/tmp.ipynb
 /app/ml-models/mask-rcnn-coco/frozen_inference_graph.pb

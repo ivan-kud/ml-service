@@ -1,4 +1,4 @@
-fastapi==0.96.0
+fastapi
 uvicorn[standard]
 aiofiles
 python-multipart
@@ -8,4 +8,6 @@ numpy
 opencv-python
 torch
 torchvision
+datasets
 transformers
+faiss-cpu

@@ -1,24 +1,12 @@
-import time
-
 from fastapi import Request
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
+from . import InputError, _timer
+
 
 MAX_TEXT_LENGTH = 300
-
-
-class InputError(Exception):
-    pass
-
-
-def _timer(func):
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        func_return = func(*args, **kwargs)
-        end_time = time.time()
-        return func_return, (end_time - start_time)
-    return wrapper
+MODEL_CHECKPOINT = 'cardiffnlp/twitter-roberta-base-sentiment-latest'
 
 
 def preprocess_text(text: str) -> str:
@@ -41,9 +29,8 @@ def preprocess_text(text: str) -> str:
 
 @_timer
 def load_model():
-    model_name = 'cardiffnlp/twitter-roberta-base-sentiment-latest'
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_CHECKPOINT)
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_CHECKPOINT)
 
     return tokenizer, model
 

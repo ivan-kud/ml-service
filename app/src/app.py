@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from . import digit
 from . import instance
 from . import sentiment
+from . import search
 
 
 app = FastAPI()
@@ -26,9 +27,9 @@ def read_digit(request: Request):
 
 @app.post('/digit', response_class=HTMLResponse)
 def predict_digit(request: Request,
-                  model_name: digit.ModelName = Form(),
+                  model: digit.ModelName = Form(),
                   image: str = Form()):
-    response = digit.get_response(model_name, image)
+    response = digit.get_response(model, image)
     response.update({'request': request})
     return templates.TemplateResponse('pages/digit.html', response)
 
@@ -59,3 +60,18 @@ def predict_sentiment(request: Request,
     response = sentiment.get_response(text)
     response.update({'request': request})
     return templates.TemplateResponse('pages/sentiment.html', response)
+
+
+@app.get('/search', response_class=HTMLResponse)
+def read_search(request: Request):
+    return templates.TemplateResponse('pages/search.html',
+                                      {'request': request})
+
+
+@app.post('/search', response_class=HTMLResponse)
+def predict_search(request: Request,
+                   file: UploadFile,
+                   model: search.ModelName = Form()):
+    response = search.get_response(model, file)
+    response.update({'request': request})
+    return templates.TemplateResponse('pages/search.html', response)
