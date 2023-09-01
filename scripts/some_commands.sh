@@ -100,7 +100,7 @@ git clone https://github.com/ivan-kud/ml-service.git
 
 # Rebuild image
 cd ml-service
-docker build ./ -t ml-service-fastapi
+docker build . -t ml-service-fastapi
 
 # Delete old container and image
 docker container ls -a
