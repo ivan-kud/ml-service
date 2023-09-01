@@ -1,6 +1,6 @@
 services:
   fastapi:
-    build: ./
+    build: .
     restart: unless-stopped
 #    ports: # for local deployment
 #      - "80:80" # for local deployment

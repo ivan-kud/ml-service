@@ -117,10 +117,10 @@ docker compose up
 #################################
 # Run application locally
 cd app
-uvicorn src.app:app --reload
+uvicorn src.main:app --reload
 
 # Build docker image
-docker build ./ -f Dockerfile-locally -t ivankud/ml-service
+docker build . -f Dockerfile-locally -t ivankud/ml-service
 # Run docker container
 docker run --rm -it -p 80:80 ivankud/ml-service
 # Login to Docker Hub
