@@ -1,4 +1,5 @@
 fastapi
+pydantic
 uvicorn[standard]
 gunicorn
 aiofiles
@@ -12,3 +13,5 @@ torchvision
 datasets
 transformers
 faiss-cpu
+catboost
+pandas

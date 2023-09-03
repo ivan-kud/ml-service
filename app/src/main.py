@@ -7,6 +7,7 @@ from . import digit
 from . import instance
 from . import sentiment
 from . import search
+from . import housing
 
 
 app = FastAPI()
@@ -75,3 +76,12 @@ async def predict_search(request: Request,
     response = search.get_response(model, file)
     response.update({'request': request})
     return templates.TemplateResponse('pages/search.html', response)
+
+
+@app.post('/housing')
+async def predict_housing(housings: list[housing.Housing]):
+    try:
+        result = housing.predict(housings)
+    except Exception:
+        return None
+    return result
