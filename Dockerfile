@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 COPY ./app .
 
-CMD gunicorn src.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80 --proxy-protocol --timeout 90
+CMD gunicorn src.main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80 --proxy-protocol --timeout 60
