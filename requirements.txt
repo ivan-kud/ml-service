@@ -1,7 +1,6 @@
 fastapi
 pydantic
 uvicorn[standard]
-gunicorn
 aiofiles
 python-multipart
 jinja2
@@ -11,7 +10,7 @@ opencv-python
 torch
 torchvision
 datasets
-transformers
+transformers==4.33.0
 faiss-cpu
 catboost
 pandas
