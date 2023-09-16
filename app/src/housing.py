@@ -77,26 +77,6 @@ params_map = {'Тип квартиры': 'type',
               'к': 'kitchen_area',
               'Этажей': 'floors'}
 
-street_map = {
-    'Проспект Ленина': 'ленина',
-    'Карла Маркса': 'карла маркса',
-    'Советская': 'советская',
-    'Зеленый Лог': 'зеленый лог',
-    'Труда': 'труда',
-    '50-летия Магнитки': 'летия магнитки',
-    'Газеты Правда': 'газеты правда',
-    'Курортная': 'урортная',
-    'Грязнова': 'грязнова',
-    'Суворова': 'суворова',
-    'Московская': 'московская',
-    'Уральская': 'уральская',
-    'Коробова': 'коробова',
-    'Металлургов': 'металлургов',
-    'Октябрьская': 'октябрьская',
-    'Тевосяна': 'тевосяна',
-    'Ворошилова': 'ворошилова',
-}
-
 
 def predict(housings: list[Housing]):
     # Convert pydantic model to python list of dicts
@@ -104,10 +84,7 @@ def predict(housings: list[Housing]):
         housing = housing.model_dump()
         for k, v in params_map.items():
             if isinstance(housing[v], Enum):
-                if k == 'Улица':
-                    housing[k] = street_map[housing[v].value]
-                else:
-                    housing[k] = housing[v].value
+                housing[k] = housing[v].value
             else:
                 housing[k] = housing[v]
             del housing[v]
