@@ -7,6 +7,7 @@ from . import digit
 from . import instance
 from . import sentiment
 from . import search
+from . import suggestion
 from . import housing
 
 
@@ -76,6 +77,20 @@ async def predict_search(request: Request,
     response = search.get_response(model, file)
     response.update({'request': request})
     return templates.TemplateResponse('pages/search.html', response)
+
+
+@app.get('/suggestion', response_class=HTMLResponse)
+async def read_suggestion(request: Request):
+    return templates.TemplateResponse('pages/suggestion.html',
+                                      {'request': request})
+
+
+@app.post('/suggestion', response_class=HTMLResponse)
+async def predict_suggestion(request: Request,
+                             text: str = Form()):
+    response = suggestion.get_response(text)
+    response.update({'request': request})
+    return templates.TemplateResponse('pages/suggestion.html', response)
 
 
 @app.post('/housing')
