@@ -12,7 +12,7 @@ from transformers import (CLIPImageProcessor, CLIPVisionModelWithProjection,
 from . import pil2opencv, opencv2base64, InputError, _timer
 
 
-DATASET_PATH = './ml-models/search_data/'
+DATASET_PATH = './ml-models/search-data/'
 CLIP_CHECKPOINT = 'openai/clip-vit-base-patch32'
 BLIP_CHECKPOINT = 'Salesforce/blip-image-captioning-base'
 IMAGE_MAX_SIZE = 5000
